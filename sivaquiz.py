@@ -18,14 +18,13 @@ def add_technology():
     cur = db.cursor()
     tech_name = input("Enter technology name: ").strip().lower()  # convert to lowercase
 
-    # Check if the technology already exists
+    
     cur.execute("SELECT * FROM technologies WHERE name = %s", (tech_name,))
     result = cur.fetchone()
 
     if result:
         print("Technology already exists.")
     else:
-        # Insert the new technology
         cur.execute("INSERT INTO technologies (name) VALUES (%s)", (tech_name,))
         db.commit()
         print("Technology added successfully.")
@@ -62,7 +61,7 @@ def add_question():
 def modify_question():
     cur = db.cursor()
 
-    # Show all technologies
+    
     cur.execute("SELECT * FROM technologies")
     techs = cur.fetchall()
     if not techs:
@@ -75,7 +74,7 @@ def modify_question():
 
     tech_id = int(input("Enter technology ID to select: "))
 
-    # Show questions for selected technology
+   
     cur.execute("SELECT * FROM questions WHERE technology_id=%s", (tech_id,))
     questions = cur.fetchall()
     if not questions:
@@ -84,7 +83,7 @@ def modify_question():
 
     print("\nQuestions for selected technology:")
     for q in questions:
-        print(f"ID: {q[0]} | Q: {q[2]}")  # show ID and question text
+        print(f"ID: {q[0]} | Q: {q[2]}")  
 
     qid = int(input("Enter question ID to modify: "))
 
@@ -108,7 +107,7 @@ def modify_question():
 
 def delete_question():
     cur = db.cursor()
-    view_questions()  # show all questions first
+    view_questions()  
     qid = int(input("Enter question ID to delete: "))
     cur.execute("DELETE FROM questions WHERE id=%s", (qid,))
     db.commit()
@@ -118,7 +117,7 @@ def delete_question():
 def view_questions():
     cur = db.cursor()
 
-    # Show available technologies
+    
     cur.execute("SELECT * FROM technologies")
     techs = cur.fetchall()
     if not techs:
@@ -129,10 +128,10 @@ def view_questions():
     for t in techs:
         print(f"{t[0]} - {t[1]}")
 
-    # Ask for technology
+    
     tech_name = input("Enter technology name to view questions: ").strip().lower()
 
-    # Get technology ID
+    
     cur.execute("SELECT id FROM technologies WHERE LOWER(name)=%s", (tech_name,))
     row = cur.fetchone()
     if not row:
@@ -140,7 +139,7 @@ def view_questions():
         return
     tech_id = row[0]
 
-    # Fetch questions for this technology
+   
     cur.execute(
         "SELECT id, question, option1, option2, option3, option4, answer FROM questions WHERE technology_id=%s",
         (tech_id,)
@@ -182,7 +181,7 @@ def view_scores():
         print(f"Score ID: {r[0]}, Username: {r[1]}, Mobile: {r[2]}, "
               f"Technology: {r[3]}, Score: {r[4]}/{r[5]}, Time: {r[6]}")
 
-#USER FUNCTIONS 
+ 
 def register_user():
     uname = input("Enter username: ").strip()   
     mobile = input("Enter mobile: ").strip()
@@ -220,7 +219,7 @@ from datetime import datetime
 def take_quiz(user_id):
     cur = db.cursor()
 
-    # Show available technologies
+   
     cur.execute("SELECT * FROM technologies")
     techs = cur.fetchall()
     if not techs:
@@ -230,10 +229,7 @@ def take_quiz(user_id):
     print("\nAvailable Technologies:")
     for t in techs:
         print(f"{t[0]} - {t[1]}")
-
     tech_name = input("Enter technology name: ").strip().lower()
-
-    # Fetch technology id (case-insensitive)
     cur.execute("SELECT id FROM technologies WHERE LOWER(name) = %s", (tech_name,))
     row = cur.fetchone()
     if not row:
@@ -241,7 +237,7 @@ def take_quiz(user_id):
         return
     tech_id = row[0]
 
-    # Fetch questions for the selected technology
+ 
     cur.execute("SELECT id, question, option1, option2, option3, option4, answer FROM questions WHERE technology_id = %s", (tech_id,))
     questions = cur.fetchall()
     if not questions:
@@ -250,21 +246,21 @@ def take_quiz(user_id):
 
     score = 0
     total = len(questions)
-    ans_map = {1: "A", 2: "B", 3: "C", 4: "D"}  # numeric answer to letter
+    ans_map = {1: "A", 2: "B", 3: "C", 4: "D"} 
 
     for q in questions:
         print("\nQ:", q[1])
-        options = q[2:6]  # option1 to option4
+        options = q[2:6]  
         for label, option in zip(["A", "B", "C", "D"], options):
             print(f"{label}: {option}")
 
         ans = input("Your answer (A/B/C/D): ").upper()
-        if ans_map.get(q[6]) == ans:  # compare numeric answer with user input
+        if ans_map.get(q[6]) == ans: 
             score += 1
 
     print(f"\nQuiz finished! Your score: {score}/{total}")
 
-    # Save score
+   
     cur.execute(
         "INSERT INTO scores (user_id, technology_id, score, total, time) VALUES (%s,%s,%s,%s,%s)",
         (user_id, tech_id, score, total, datetime.now())
@@ -287,7 +283,7 @@ def view_top_scores():
     for r in rows:
         print(f"User: {r[0]}, Mobile: {r[1]}, Score: {r[2]}/{r[3]}")
 
-# MENUS 
+ 
 def admin_menu():
     while True:
         print("\n--- ADMIN MENU ---")
@@ -305,9 +301,9 @@ def admin_menu():
         elif ch == "2": 
             add_question()
         elif ch == "3": 
-            modify_question()  # you need to define this function
+            modify_question() 
         elif ch == "4": 
-            delete_question()  # you need to define this function
+            delete_question()  
         elif ch == "5": 
             view_questions()
         elif ch == "6": 
@@ -358,3 +354,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
